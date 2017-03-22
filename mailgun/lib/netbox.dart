@@ -19,5 +19,5 @@ class ErrorProp {
 class Config {
  String publicAPIKey = "";
  String secretAPIKey = "";
- String yourDomainName = "";
+ String domainName = "";
 }

@@ -66,14 +66,19 @@ class MultipartBinary extends MultipartItem {
 // todo. dart:html version should use formdata class or blob
 //
 class Multipart {
-  Future<Response> post(Requester requester, String url, List<MultipartItem> items) async {
+  List<MultipartItem> items = [];
+  Future<Response> post(Requester requester, String url) async {
     String boundary = "----" + Uuid.createUUID().replaceAll("-", "");
     return await requester.request(Requester.TYPE_POST, url, //
-        data: bakeMultiPartFromBinary(boundary, items), //
+        data: bakeMultiPartFromBinary(boundary), //
         headers: {"Content-Type": """multipart/form-data; boundary=${boundary}"""});
   }
 
-  List<int> bakeMultiPartFromBinary(String boundary, List<MultipartItem> items) {
+  add(MultipartItem item){
+    items.add(item);
+  }
+
+  List<int> bakeMultiPartFromBinary(String boundary) {
     List<List<int>> buffer = [];
     buffer.add(ASCII.encode("""--${boundary}\r\n"""));
     for (int i = 0; i < items.length; i++) {

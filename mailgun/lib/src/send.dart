@@ -25,8 +25,19 @@ class SendBox {
 
     //
     req.Multipart multipart = new req.Multipart();
-    req.MultipartItem item = new req.MultipartPlainText.fromTextPlain("from", from);
-    req.Response response = await requester.request("POST", url);
+    multipart.add(new req.MultipartPlainText.fromTextPlain("from", from));
+    for(String t in to) { 
+      multipart.add(new req.MultipartPlainText.fromTextPlain("to", t));
+    }
+    for(String c in cc) { 
+      multipart.add(new req.MultipartPlainText.fromTextPlain("cc", c));
+    }
+    for(String b in bcc) { 
+      multipart.add(new req.MultipartPlainText.fromTextPlain("bcc", b));
+    }
+    multipart.add(new req.MultipartPlainText.fromTextPlain("subject", subject));
+    multipart.add(new req.MultipartPlainText.fromTextPlain("text", body));
+    req.Response response = await await multipart.post(requester, url);
     return new SendMailProp(//
       new pro.MiniProp.fromByte(response.response.asUint8List(), errorIsThrow: false));
   }
