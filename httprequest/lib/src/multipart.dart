@@ -2,16 +2,46 @@ part of httprequest;
 
 class MultipartItem {
   String name;
+
+  List<List<int>> toBytesList() {
+    return [];
+  }
+}
+
+class MultipartPlainText extends MultipartItem {
+  String name;
+  String value;
+  String contentType = "text/plain";
+  String charset = "UTF-8";
+
+  List<List<int>> toBytesList() {
+    List<List<int>> bufferList = [];
+    bufferList.add(ASCII.encode("""Content-Disposition: form-data; name="${name}";"\r\n"""));
+    bufferList.add(ASCII.encode("""Content-Type: ${contentType}; charset="${charset}" \r\n"""));
+    bufferList.add(ASCII.encode("""\r\n"""));
+    bufferList.add(UTF8.encode(name));
+    return bufferList;
+  }
+
+  MultipartPlainText.fromTextPlain(this.name,  this.value) {
+  }
+}
+
+
+
+
+class MultipartBinary extends MultipartItem {
+  String name;
   String fileName;
   String contentType;
   typed.ByteBuffer buffer;
 
   // "data:image/png:base64,xxxxx..."
-  factory MultipartItem.fromBase64(String name, String fileName, String contentType, String base64Src) {
+  factory MultipartBinary.fromBase64(String name, String fileName, String contentType, String base64Src) {
     return new MultipartItem.fromList(name, fileName, contentType, BASE64.decode(base64Src));
   }
 
-  MultipartItem.fromList(this.name, this.fileName, this.contentType, List<int> data) {
+  MultipartBinary.fromList(this.name, this.fileName, this.contentType, List<int> data) {
     if(data is typed.Uint8List) {
       buffer = data.buffer;
     } else {
@@ -19,8 +49,9 @@ class MultipartItem {
     }
   }
 
-  MultipartItem.fromByteBuffer(this.name, this.fileName, this.contentType, this.buffer) {
+  MultipartBinary.fromByteBuffer(this.name, this.fileName, this.contentType, this.buffer) {
   }
+
 
   List<List<int>> toBytesList() {
     List<List<int>> bufferList = [];
@@ -31,7 +62,6 @@ class MultipartItem {
     return bufferList;
   }
 }
-
 //
 // todo. dart:html version should use formdata class or blob
 //
@@ -66,13 +96,4 @@ class Multipart {
     }
     return byteBuffer;
   }
-/*
-  Future<Object> srcToMultipartData(String src) {
-    List<int> v1 = BASE64.decode(src);
-    html.Blob b = new html.Blob([v1], "image/png");
-    var fd = new html.FormData();
-    fd.appendBlob("file", b);
-    return fd;
-  }
-  */
 }
