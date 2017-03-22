@@ -1,0 +1,9 @@
+name: k07me.mailgun
+description: html location lib
+version: 0.0.1
+
+dependencies:
+ me.k07.httprequest:
+    path: ../httprequest
+ me.k07.prop:
+    path: ../prop
