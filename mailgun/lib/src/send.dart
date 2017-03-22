@@ -26,6 +26,8 @@ class SendBox {
     //
     req.Multipart multipart = new req.Multipart();
     multipart.add(new req.MultipartPlainText.fromTextPlain("from", from));
+    multipart.add(new req.MultipartPlainText.fromTextPlain("sender", "postmaster@${config.domainName}"));
+    
     for(String t in to) { 
       multipart.add(new req.MultipartPlainText.fromTextPlain("to", t));
     }
@@ -37,7 +39,8 @@ class SendBox {
     }
     multipart.add(new req.MultipartPlainText.fromTextPlain("subject", subject));
     multipart.add(new req.MultipartPlainText.fromTextPlain("text", body));
-    req.Response response = await await multipart.post(requester, url);
+    req.Response response = await await multipart.post(requester, url,
+    headers:<String,String>{"Authorization": "Basic "+conv.BASE64.encode(conv.UTF8.encode("api:"+config.secretAPIKey)) });
     return new SendMailProp(//
       new pro.MiniProp.fromByte(response.response.asUint8List(), errorIsThrow: false));
   }
@@ -51,4 +54,8 @@ class SendMailProp {
 
   String get message => prop.getString("message", "");
   String get id => prop.getString("id", "");
+
+  String toString(){
+    return prop.toJson();
+  }
 }

@@ -16,10 +16,10 @@ class MultipartPlainText extends MultipartItem {
 
   List<List<int>> toBytesList() {
     List<List<int>> bufferList = [];
-    bufferList.add(ASCII.encode("""Content-Disposition: form-data; name="${name}";"\r\n"""));
-    bufferList.add(ASCII.encode("""Content-Type: ${contentType}; charset="${charset}" \r\n"""));
+    bufferList.add(ASCII.encode("""Content-Disposition: form-data; name="${name}"\r\n"""));
+//    bufferList.add(ASCII.encode("""Content-Type: ${contentType}; charset="${charset}"; \r\n"""));
     bufferList.add(ASCII.encode("""\r\n"""));
-    bufferList.add(UTF8.encode(name));
+    bufferList.add(UTF8.encode(value));
     return bufferList;
   }
 
@@ -38,7 +38,7 @@ class MultipartBinary extends MultipartItem {
 
   // "data:image/png:base64,xxxxx..."
   factory MultipartBinary.fromBase64(String name, String fileName, String contentType, String base64Src) {
-    return new MultipartItem.fromList(name, fileName, contentType, BASE64.decode(base64Src));
+    return new MultipartBinary.fromList(name, fileName, contentType, BASE64.decode(base64Src));
   }
 
   MultipartBinary.fromList(this.name, this.fileName, this.contentType, List<int> data) {
@@ -67,11 +67,19 @@ class MultipartBinary extends MultipartItem {
 //
 class Multipart {
   List<MultipartItem> items = [];
-  Future<Response> post(Requester requester, String url) async {
+  Future<Response> post(Requester requester, String url, {Map<String,String> headers:null}) async {
     String boundary = "----" + Uuid.createUUID().replaceAll("-", "");
+    List<int> dat =bakeMultiPartFromBinary(boundary);
+
+    if(headers == null) {
+      headers = <String,String>{};
+    }
+    headers["Content-Type"] = """multipart/form-data; boundary=${boundary}""";
+    print(headers);
+        print(UTF8.decode(dat));
     return await requester.request(Requester.TYPE_POST, url, //
-        data: bakeMultiPartFromBinary(boundary), //
-        headers: {"Content-Type": """multipart/form-data; boundary=${boundary}"""});
+        data: dat, //
+        headers: headers );
   }
 
   add(MultipartItem item){

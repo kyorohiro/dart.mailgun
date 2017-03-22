@@ -11,13 +11,13 @@ class IORequester extends Requester {
     if (headers == null) {
       headers = {};
     }
-    print("[A1] ${type} ${url} ${headers} ${data}");
+   // print("[A1] ${type} ${url} ${headers} ${data}");
     io.HttpClient client = new io.HttpClient(context: io.SecurityContext.defaultContext);
 
-    print("[A2]");
+   // print("[A2]");
     io.HttpClientRequest req = await client.openUrl(type, Uri.parse(url));
 
-    print("[A3]");
+  //  print("[A3]");
     for (String k in headers.keys) {
       req.headers.add(k, headers[k]);
     }
@@ -25,20 +25,20 @@ class IORequester extends Requester {
     if (data != null) {
       req.write(data);
     }
-    print("[A4]");
+   // print("[A4]");
     io.HttpClientResponse res = await req.close();
 
-    print("[A5]");
+   // print("[A5]");
     Map<String, List<String>> headerss = {};
     res.headers.forEach((String name, List<String> values) {
       headerss[name] = new List.from(values);
     });
 
-    print("[A6] ${res}");
+    //print("[A6] ${res}");
     var v = await res.single;
-    print("[A7]");
+    print(UTF8.decode(new typed.Uint8List.fromList(v)));
     var ret = new Response(res.statusCode, headerss, new typed.Uint8List.fromList(v).buffer);
-    print("[A8]");
+   // print("[A8]");
     return ret;
   }
 }
