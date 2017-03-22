@@ -20,7 +20,7 @@ class SendBox {
   */
   Future<SendMailProp> sendMail(String from, List<String> to, String subject, String body, 
   {List<String> cc: const<String>[], List<String> bcc:const<String>[]}) async {
-    String url = "https://api.mailgun.net/v3/${YOUR_DOMAIN_NAME}/messages";
+    String url = "https://api.mailgun.net/v3/${this.config.domainName}/messages";
     req.Requester requester = await this.builder.createRequester();
 
     //
