@@ -75,8 +75,8 @@ class Multipart {
       headers = <String,String>{};
     }
     headers["Content-Type"] = """multipart/form-data; boundary=${boundary}""";
-    print(headers);
-        print(UTF8.decode(dat));
+   // print(headers);
+  // print(UTF8.decode(dat));
     return await requester.request(Requester.TYPE_POST, url, //
         data: dat, //
         headers: headers );
@@ -107,6 +107,7 @@ class Multipart {
       byteBuffer.setAll(index, b);
       index += b.length;
     }
+   // print(UTF8.decode(byteBuffer));
     return byteBuffer;
   }
 }

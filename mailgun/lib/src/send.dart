@@ -26,7 +26,6 @@ class SendBox {
     //
     req.Multipart multipart = new req.Multipart();
     multipart.add(new req.MultipartPlainText.fromTextPlain("from", from));
-    multipart.add(new req.MultipartPlainText.fromTextPlain("sender", "postmaster@${config.domainName}"));
     
     for(String t in to) { 
       multipart.add(new req.MultipartPlainText.fromTextPlain("to", t));

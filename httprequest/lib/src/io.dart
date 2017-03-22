@@ -11,7 +11,8 @@ class IORequester extends Requester {
     if (headers == null) {
       headers = {};
     }
-   // print("[A1] ${type} ${url} ${headers} ${data}");
+    //print("[A1] ${type} ${url} ${headers}");
+   /// print("${UTF8.decode(data)}");
     io.HttpClient client = new io.HttpClient(context: io.SecurityContext.defaultContext);
 
    // print("[A2]");
@@ -23,7 +24,11 @@ class IORequester extends Requester {
     }
     req.followRedirects = true;
     if (data != null) {
-      req.write(data);
+      if(data is String) {
+       req.write(data);
+      } else {
+       req.add(data);
+      }
     }
    // print("[A4]");
     io.HttpClientResponse res = await req.close();
@@ -36,7 +41,7 @@ class IORequester extends Requester {
 
     //print("[A6] ${res}");
     var v = await res.single;
-    print(UTF8.decode(new typed.Uint8List.fromList(v)));
+   // print(UTF8.decode(new typed.Uint8List.fromList(v)));
     var ret = new Response(res.statusCode, headerss, new typed.Uint8List.fromList(v).buffer);
    // print("[A8]");
     return ret;

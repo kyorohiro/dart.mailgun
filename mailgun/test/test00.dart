@@ -7,6 +7,6 @@ main() async {
   //config;
   req.NetBuilder builder = new req.IONetBuilder();
   box.SendBox sbox = new box.SendBox(builder, config);
-  box.SendMailProp prop = await sbox.sendMail("postmaster@${config.domainName}", ["kyorohiro@gmail.com"], "test", "body");
+  box.SendMailProp prop = await sbox.sendMail("Excited User <postmaster@${config.domainName}>", ["kyorohiro@gmail.com"], "test", "body");
   print(prop);
 }
