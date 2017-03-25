@@ -40,7 +40,6 @@ class RouteBox {
          url, //
         data: dat, //
         headers: headers );
-    print("xxs${response.status}");
     return new pro.MiniProp.fromByte(response.response.asUint8List(), errorIsThrow: false);
   }
 
@@ -70,7 +69,20 @@ class RouteBox {
       headers:<String,String>{
         "Authorization": "Basic "+conv.BASE64.encode(conv.UTF8.encode("api:"+config.secretAPIKey))
       });
-    print("xxs${response.status}");
+    return new pro.MiniProp.fromByte(response.response.asUint8List(), errorIsThrow: false);
+  }
+
+  Future<pro.MiniProp> delete(int id) async {
+    String url = "https://api.mailgun.net/v3/routes/${id}";
+
+    req.Requester requester = await this.builder.createRequester();
+
+    req.Response response = await requester.request(
+      req.Requester.TYPE_DELETE, 
+      url,
+      headers:<String,String>{
+        "Authorization": "Basic "+conv.BASE64.encode(conv.UTF8.encode("api:"+config.secretAPIKey))
+      });
     return new pro.MiniProp.fromByte(response.response.asUint8List(), errorIsThrow: false);
   }
 }
