@@ -8,6 +8,7 @@ main() async {
   //config;
   req.NetBuilder builder = new req.IONetBuilder();
   box.SendBox sbox = new box.SendBox(builder, config);
+  box.RouteBox rbox = new box.RouteBox(builder, config);
   /*
   try {
     box.SendMailProp prop = await sbox.sendMail(
@@ -22,12 +23,28 @@ main() async {
   } catch(e) {
     print("${e}");
   }*/
-
+/*
   try {
     pro.MiniProp prop = await sbox.events(property: {"tags":"A", "event":"failed"});
     print(prop.toJson());
   } catch(e) {
     print("${e}");
+  }*/
+
+  try {
+    pro.MiniProp prop = await sbox.route([
+      //"forward(\"mosskite@gmail.com\")",
+      "stop()"]);
+    print(prop.toJson());
+  } catch(e) {
+    print("${e}");
   }
-  
+
+  try {
+    pro.MiniProp prop = await rbox.get();
+    print(prop.toJson());
+  } catch(e) {
+    print("${e}");
+  }
+ 
 }
