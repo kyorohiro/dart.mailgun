@@ -9,12 +9,15 @@ class RouteBox {
   RouteBox(this.builder, this.config) {
   }
 
-  Future<pro.MiniProp> route(List<String> actions,{
+
+  Future<pro.MiniProp> update(List<String> actions,{
     int priority:0,
     String description:"default",
     String expression: "catch_all()",
+    id: null,
     }) async {
     String url = "https://api.mailgun.net/v3/routes";
+    url += ((id==""||id==null)?"":"/${id}");
     req.Requester requester = await this.builder.createRequester();
     req.Multipart multipart = new req.Multipart();
     multipart.add(new req.MultipartPlainText.fromTextPlain("priority", "${priority}"));
@@ -23,8 +26,20 @@ class RouteBox {
     for(String action in actions) {
       multipart.add(new req.MultipartPlainText.fromTextPlain("action", "${action}"));
     }
-    req.Response response = await await multipart.post(requester, url,
-    headers:<String,String>{"Authorization": "Basic "+conv.BASE64.encode(conv.UTF8.encode("api:"+config.secretAPIKey)) });
+    //
+    //
+    String boundary = multipart.createBoundary();
+    List<int> dat =multipart.bakeMultiPartFromBinary(boundary);
+
+    Map<String,String> headers = {
+      "Content-Type": """multipart/form-data; boundary=${boundary}""",
+      "Authorization": "Basic "+conv.BASE64.encode(conv.UTF8.encode("api:"+config.secretAPIKey))
+    };
+    req.Response response = await requester.request(
+        ((id==""||id==null)?req.Requester.TYPE_POST:req.Requester.TYPE_PUT),//
+         url, //
+        data: dat, //
+        headers: headers );
     print("xxs${response.status}");
     return new pro.MiniProp.fromByte(response.response.asUint8List(), errorIsThrow: false);
   }

@@ -82,6 +82,13 @@ class Multipart {
         headers: headers );
   }
 
+  String createBoundary() {
+    return "----" + Uuid.createUUID().replaceAll("-", "");
+  }
+  Future<List<int>> toList(String boundary) async {
+    return bakeMultiPartFromBinary(boundary);
+  }
+
   add(MultipartItem item){
     items.add(item);
   }

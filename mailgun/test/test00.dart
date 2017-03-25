@@ -29,17 +29,49 @@ main() async {
     print(prop.toJson());
   } catch(e) {
     print("${e}");
-  }*/
+  }
+  
+  {
+    "items":[
+      {
+        "actions":["stop()"],
+        "created_at":"Sat, 25 Mar 2017 17:13:12 GMT",
+        "description":"default",
+        "expression":"catch_all()",
+        "id":"58d6a528d0303a4976122c03",
+        "priority":0},{"actions":["stop()"],
+        "created_at":"Sat, 25 Mar 2017 16:54:54 GMT",
+        "description":"default",
+        "expression":"catch_all()",
+        "id":"58d6a0defa6095c7318eea18",
+        "priority":0
+      },
+      {
+        "actions":
+          [
+            "forward(\"kyorohiro@gmail.com\")"
+          ],
+          "created_at":"Sat, 25 Mar 2017 16:38:58 GMT",
+          "description":"default",
+          "expression":"catch_all()",
+          "id":"58d69d22aa3de60ac050d837",
+          "priority":0
+       }
+     ],
+     "total_count":3
+   }
+  
+  
+  */
 
   try {
-    pro.MiniProp prop = await sbox.route([
-      //"forward(\"mosskite@gmail.com\")",
+    pro.MiniProp prop = await rbox.update([
+      "forward(\"mosskite@gmail.com\")",
       "stop()"]);
     print(prop.toJson());
   } catch(e) {
     print("${e}");
   }
-
   try {
     pro.MiniProp prop = await rbox.get();
     print(prop.toJson());
