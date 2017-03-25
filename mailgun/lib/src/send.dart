@@ -40,8 +40,20 @@ class SendBox {
     multipart.add(new req.MultipartPlainText.fromTextPlain("text", body));
     req.Response response = await await multipart.post(requester, url,
     headers:<String,String>{"Authorization": "Basic "+conv.BASE64.encode(conv.UTF8.encode("api:"+config.secretAPIKey)) });
-    return new SendMailProp(//
-      new pro.MiniProp.fromByte(response.response.asUint8List(), errorIsThrow: false));
+    switch(response.status) {
+      case 200:
+        return new SendMailProp(//
+          new pro.MiniProp.fromByte(response.response.asUint8List(), errorIsThrow: false));
+          break;
+      case 400:
+        throw new Exception("EXCEPTION_MISSING_REQUIRED_PARAMETERS");
+      case 401:
+        throw new Exception("EXCEPTION_GENERIC_HTTP_ERROR");
+      case 404:
+        throw new Exception("EXCEPTION_GENERIC_HTTP_ERROR");
+      default:
+        throw new Exception("EXCEPTION_GENERIC_HTTP_ERROR");
+    }
   }
 }
 
