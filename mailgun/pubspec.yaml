@@ -7,3 +7,4 @@ dependencies:
     path: ../httprequest
  me.k07.prop:
     path: ../prop
+ intl: any

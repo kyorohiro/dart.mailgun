@@ -9,6 +9,51 @@ class SendBox {
   SendBox(this.builder, this.config) {
   }
 
+/*
+curl -s --user 'api:YOUR_API_KEY' -G \
+    https://api.mailgun.net/v3/YOUR_DOMAIN_NAME/events
+
+curl -s --user 'api:YOUR_API_KEY' -G \
+      https://api.mailgun.net/v3/YOUR_DOMAIN_NAME/events \
+      --data-urlencode begin='Fri, 3 May 2013 09:00:00 -0000' \
+      --data-urlencode ascending=yes \
+      --data-urlencode limit=25 \
+      --data-urlencode pretty=yes \
+      --data-urlencode recipient=joe@example.com
+          String data = "";//Fri, 3 May 2013 09:00:00 -0000
+    intl.DateFormat f = new intl.DateFormat("EEE, d MMM yyyy HH:mm:ss");
+    int timestump = (new DateTime.now()).millisecondsSinceEpoch;
+    DateTime s = new DateTime.fromMillisecondsSinceEpoch(timestump-1000*60*60, isUtc: false);
+    DateTime e = new DateTime.fromMillisecondsSinceEpoch(timestump, isUtc: false);
+    data = "begin="+ req.PercentEncode.encode(conv.UTF8.encode(f.format(s)+ " +0900")); 
+    data += "&end="+ req.PercentEncode.encode(conv.UTF8.encode(f.format(e)+ " +0900")); 
+*/
+  Future<pro.MiniProp> events({Map<String,String> property:const{}}) async {
+    String url = "https://api.mailgun.net/v3/${this.config.domainName}/events";
+    req.Requester requester = await this.builder.createRequester();
+
+    StringBuffer options = new StringBuffer();
+    property.forEach((String k, String v){
+      if(options.length > 0) {
+        options.write("&");
+      } else {
+        options.write("?");        
+      }
+      options.write("${k}=${req.PercentEncode.encode(conv.UTF8.encode(v))}");
+    });
+    //
+    print(options.toString());
+    req.Response response = await requester.request(
+      req.Requester.TYPE_GET, //
+      url+options.toString(),
+      headers:<String,String>{ //
+        "Authorization": "Basic "+conv.BASE64.encode(conv.UTF8.encode("api:"+config.secretAPIKey)) ,
+      }
+    );
+    print("xxs${response.status}");
+    return new pro.MiniProp.fromByte(response.response.asUint8List(), errorIsThrow: false);
+  }
+
   /*
   curl -s --user 'api:YOUR_API_KEY' \
     https://api.mailgun.net/v3/YOUR_DOMAIN_NAME/messages \
@@ -18,8 +63,12 @@ class SendBox {
     -F subject='Hello' \
     -F text='Testing some Mailgun awesomness!'
   */
-  Future<SendMailProp> sendMail(String from, List<String> to, String subject, String body, 
-  {List<String> cc: const<String>[], List<String> bcc:const<String>[]}) async {
+  Future<SendMailProp> sendMail(
+    String from, List<String> to, String subject, String body, {//
+      List<String> cc: const<String>[],//
+      List<String> bcc:const<String>[],
+      List<String> tags:const<String>[],
+   }) async {
     String url = "https://api.mailgun.net/v3/${this.config.domainName}/messages";
     req.Requester requester = await this.builder.createRequester();
 
@@ -36,6 +85,11 @@ class SendBox {
     for(String b in bcc) { 
       multipart.add(new req.MultipartPlainText.fromTextPlain("bcc", b));
     }
+    for(String t in tags) { 
+      multipart.add(new req.MultipartPlainText.fromTextPlain("o:tag", t));
+    }
+    
+    
     multipart.add(new req.MultipartPlainText.fromTextPlain("subject", subject));
     multipart.add(new req.MultipartPlainText.fromTextPlain("text", body));
     req.Response response = await await multipart.post(requester, url,
